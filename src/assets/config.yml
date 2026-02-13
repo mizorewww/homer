@@ -1,0 +1,135 @@
+---
+# Default configuration
+
+title: ""
+subtitle: ""
+
+header: true
+footer: false
+columns: 3
+connectivityCheck: true
+
+defaults:
+  # columns, list
+  layout: columns
+  # auto, light, dark
+  colorTheme: auto
+
+theme: default
+colors: ~
+
+navbar:
+  menuPaddingX: 48
+
+message: ~
+links:
+  - name: "Google"
+    icon: "fab fa-google"
+    url: "https://www.google.com"
+    target: "_blank"
+  - name: "GitHub"
+    icon: "fab fa-github"
+    url: "https://github.com"
+    target: "_blank"
+
+services:
+  - name: "开发"
+    icon: "fas fa-code"
+    items:
+      - name: "GitHub"
+        icon: "fab fa-github"
+        subtitle: "代码托管与开源社区"
+        tag: "code"
+        url: "https://github.com"
+        target: "_blank"
+      - name: "Stack Overflow"
+        icon: "fab fa-stack-overflow"
+        subtitle: "开发问题搜索"
+        tag: "qa"
+        url: "https://stackoverflow.com"
+        target: "_blank"
+      - name: "Vite"
+        icon: "fa-solid fa-bolt"
+        subtitle: "前端构建工具文档"
+        tag: "docs"
+        url: "https://vite.dev"
+        target: "_blank"
+
+  - name: "学习 & 工具"
+    icon: "fas fa-book"
+    items:
+      - name: "MDN Web Docs"
+        icon: "fa-solid fa-globe"
+        subtitle: "Web 技术权威文档"
+        tag: "docs"
+        url: "https://developer.mozilla.org"
+        target: "_blank"
+      - name: "Vue.js"
+        icon: "fab fa-vuejs"
+        subtitle: "Vue 官方文档"
+        tag: "frontend"
+        url: "https://vuejs.org"
+        target: "_blank"
+      - name: "掘金"
+        icon: "fa-solid fa-newspaper"
+        subtitle: "中文技术社区"
+        tag: "community"
+        url: "https://juejin.cn"
+        target: "_blank"
+
+
+# 侧边小组件数据源配置（可复用）
+# 每个 widget 通过 provider 字段引用这里的配置键
+widgetProviders:
+  # OKX 实时行情（用于 cryptoTicker）
+  okx:
+    baseUrl: "https://www.okx.com"
+    path: "/api/v5/market/ticker"
+    quote: "USDT"
+    refreshMs: 8000
+
+  # IP 信息（用于 ipSkk）
+  ipSkk:
+    # 先获取公网 IP
+    ipUrl: "https://api.ip.sb/ip"
+    # 主接口异常时自动回退
+    backupIpUrl: "https://api.ipify.org"
+    # 再根据 IP 获取完整地理信息 JSON
+    geoipUrlBase: "https://api.ip.sb/geoip/"
+
+# 侧边小组件分组（分组结构与 services 类似）
+# - left: 左侧栏
+# - right: 右侧栏
+# group 字段说明：
+#   name: 分组名
+#   icon: FontAwesome 图标（可选）
+#   simpleIcon: simpleicons 名称（可选，和 icon 二选一）
+#   items: 组件列表
+widgets:
+  left:
+    - name: "Crypto"
+      simpleIcon: "bitcoin"
+      items:
+        - type: "cryptoTicker"
+          title: "OKX 实时行情"
+          provider: "okx"
+          symbols: ["BTC", "ETH", "SOL"]
+          # 可选：自定义币种图标 URL（优先于 simpleIcons）
+          iconUrls:
+            BTC: "https://cdn.coinglasscdn.com/static/img/coins/bitcoin-BTC.png"
+          # 每个币种可选 simpleicons 图标名
+          simpleIcons:
+            BTC: "bitcoin"
+            ETH: "ethereum"
+            SOL: "solana"
+
+  right:
+    - name: "Network"
+      simpleIcon: "cloudflare"
+      items:
+        - type: "ipSkk"
+          title: "IP / Route"
+          provider: "ipSkk"
+
+
+proxy: ~

@@ -21,7 +21,7 @@ yarn-error.log*
 *.sw?
 
 # App configuration
-config.yml
+# (Fork 场景可将配置纳入版本管理)
 
 .drone.yml
 

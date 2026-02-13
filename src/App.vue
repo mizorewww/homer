@@ -11,15 +11,15 @@
   >
     <DynamicTheme v-if="config.colors" :themes="config.colors" />
     <div id="bighead">
-      <section v-if="config.header" class="first-line">
+      <section v-if="showHeaderSection" class="first-line">
         <div v-cloak class="container">
-          <div class="logo">
+          <div v-if="config.logo || config.icon" class="logo">
             <a href="#">
               <img v-if="config.logo" :src="config.logo" alt="dashboard logo" />
             </a>
             <i v-if="config.icon" :class="config.icon"></i>
           </div>
-          <div class="dashboard-title">
+          <div v-if="config.title || config.subtitle" class="dashboard-title">
             <span class="headline">{{ config.subtitle }}</span>
             <h1>{{ config.title }}</h1>
           </div>
@@ -29,6 +29,7 @@
       <Navbar
         :open="showMenu"
         :links="config.links"
+        :menu-padding-x="config.navbar?.menuPaddingX"
         @navbar-toggle="showMenu = !showMenu"
       >
         <DarkMode
@@ -56,6 +57,19 @@
     </div>
     <section id="main-section" class="section">
       <div v-cloak class="container">
+        <section class="top-search">
+          <form class="top-search-form" @submit.prevent="openGoogleSearch()">
+            <input
+              v-model.trim="googleQuery"
+              type="search"
+              class="input"
+              placeholder="Google 搜索..."
+              @keydown.alt.enter.prevent="openGoogleSearch('_blank')"
+            />
+            <button class="button is-link" type="submit">搜索</button>
+          </form>
+        </section>
+
         <ConnectivityChecker
           v-if="config.connectivityCheck"
           @network-status-update="offline = $event"
@@ -64,26 +78,54 @@
         <GetStarted v-if="configurationNeeded" />
 
         <div v-if="!offline">
-          <!-- Optional messages -->
-          <Message :item="config.message" />
+          <div class="columns is-variable is-5 dashboard-layout">
+            <div
+              v-if="hasLeftWidgets"
+              class="column is-3-desktop is-full-tablet side-widgets"
+            >
+              <WidgetGroup
+                v-for="(group, index) in leftWidgetGroups"
+                :key="`widget-left-${index}`"
+                :group="group"
+                :providers="config.widgetProviders"
+              />
+            </div>
 
-          <!-- Unified layout -->
-          <div
-            :class="[
-              'columns',
-              'is-multiline',
-              { 'layout-vertical': vlayout && !filter },
-            ]"
-          >
-            <ServiceGroup
-              v-for="(group, groupIndex) in services"
-              :key="`${currentPage}-${groupIndex}`"
-              :group="group"
-              :is-vertical="vlayout && !filter"
-              :proxy="config.proxy"
-              :columns="config.columns"
-              :group-index="groupIndex"
-            />
+            <div :class="['column', mainContentColumnClass]">
+              <!-- Optional messages -->
+              <Message :item="config.message" />
+
+              <!-- Unified layout -->
+              <div
+                :class="[
+                  'columns',
+                  'is-multiline',
+                  { 'layout-vertical': vlayout && !filter },
+                ]"
+              >
+                <ServiceGroup
+                  v-for="(group, groupIndex) in services"
+                  :key="`${currentPage}-${groupIndex}`"
+                  :group="group"
+                  :is-vertical="vlayout && !filter"
+                  :proxy="config.proxy"
+                  :columns="config.columns"
+                  :group-index="groupIndex"
+                />
+              </div>
+            </div>
+
+            <div
+              v-if="hasRightWidgets"
+              class="column is-3-desktop is-full-tablet side-widgets"
+            >
+              <WidgetGroup
+                v-for="(group, index) in rightWidgetGroups"
+                :key="`widget-right-${index}`"
+                :group="group"
+                :providers="config.widgetProviders"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -114,6 +156,7 @@ import SearchInput from "./components/SearchInput.vue";
 import SettingToggle from "./components/SettingToggle.vue";
 import DarkMode from "./components/DarkMode.vue";
 import DynamicTheme from "./components/DynamicTheme.vue";
+import WidgetGroup from "./components/widgets/WidgetGroup.vue";
 
 import defaultConfig from "./assets/defaults.yml?raw";
 
@@ -129,6 +172,7 @@ export default {
     SettingToggle,
     DarkMode,
     DynamicTheme,
+    WidgetGroup,
   },
   data: function () {
     return {
@@ -142,16 +186,54 @@ export default {
       vlayout: true,
       isDark: null,
       showMenu: false,
+      googleQuery: "",
     };
   },
   computed: {
     configurationNeeded: function () {
       return (this.loaded && !this.services) || this.configNotFound;
     },
+    showHeaderSection: function () {
+      return (
+        this.config?.header &&
+        (this.config.logo ||
+          this.config.icon ||
+          this.config.title ||
+          this.config.subtitle)
+      );
+    },
+    leftWidgetGroups: function () {
+      return this.config?.widgets?.left || [];
+    },
+    rightWidgetGroups: function () {
+      return this.config?.widgets?.right || [];
+    },
+    hasLeftWidgets: function () {
+      return this.leftWidgetGroups.length > 0;
+    },
+    hasRightWidgets: function () {
+      return this.rightWidgetGroups.length > 0;
+    },
+    mainContentColumnClass: function () {
+      if (this.hasLeftWidgets && this.hasRightWidgets) {
+        return "is-6-desktop";
+      }
+      if (this.hasLeftWidgets || this.hasRightWidgets) {
+        return "is-9-desktop";
+      }
+      return "is-full";
+    },
   },
   created: async function () {
     this.buildDashboard();
     window.onhashchange = this.buildDashboard;
+
+    if (import.meta.hot) {
+      import.meta.hot.accept("./assets/config.yml?raw", () => {
+        this.buildDashboard();
+      });
+    }
+
     this.loaded = true;
     console.info(`Homer v${__APP_VERSION__}`);
   },
@@ -200,7 +282,12 @@ export default {
         this.createStylesheet(stylesheet);
       }
     },
-    getConfig: function (path = "assets/config.yml") {
+    getConfig: async function (path = "assets/config.yml") {
+      if (import.meta.env.DEV && path === "assets/config.yml") {
+        const devConfig = await import("./assets/config.yml?raw");
+        return parse(devConfig.default, { merge: true });
+      }
+
       return fetch(path).then((response) => {
         if (response.status == 404 || response.redirected) {
           this.configNotFound = true;
@@ -224,6 +311,13 @@ export default {
             return config;
           });
       });
+    },
+    openGoogleSearch: function (target = "_self") {
+      if (!this.googleQuery) {
+        return;
+      }
+      const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(this.googleQuery)}`;
+      window.open(googleUrl, target);
     },
     matchesFilter: function (item) {
       const needle = this.filter?.toLowerCase();
@@ -286,3 +380,28 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.top-search {
+  padding: 0.25rem 0 1rem;
+}
+
+.top-search-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dashboard-layout {
+  margin-top: 0.25rem;
+}
+
+.side-widgets {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.side-widgets :deep(.widget-card .card-content) {
+  height: auto;
+}
+</style>

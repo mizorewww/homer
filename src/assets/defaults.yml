@@ -23,5 +23,15 @@ message: ~
 links: []
 services: []
 
+navbar:
+  menuPaddingX: 24
+
+# Optional side widgets configuration
+widgetProviders: {}
+
+widgets:
+  left: []
+  right: []
+
 
 proxy: ~

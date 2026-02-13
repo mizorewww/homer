@@ -1,7 +1,7 @@
 <template>
   <div v-cloak v-if="links" class="container-fluid">
     <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="container">
+      <div class="container navbar-inner">
         <div class="navbar-brand">
           <a
             role="button"
@@ -16,7 +16,11 @@
             <span aria-hidden="true"></span>
           </a>
         </div>
-        <div class="navbar-menu" :class="{ 'is-active': showMenu }">
+        <div
+          class="navbar-menu"
+          :class="{ 'is-active': showMenu }"
+          :style="navbarMenuStyle"
+        >
           <div class="navbar-start">
             <a
               v-for="(link, key) in links"
@@ -48,11 +52,25 @@ export default {
       default: false,
     },
     links: Array,
+    menuPaddingX: {
+      type: [Number, String],
+      default: 24,
+    },
   },
   emits: ["navbar-toggle"],
   computed: {
     showMenu: function () {
       return this.open && this.isSmallScreen();
+    },
+    navbarMenuStyle: function () {
+      const paddingX =
+        typeof this.menuPaddingX === "number"
+          ? `${this.menuPaddingX}px`
+          : this.menuPaddingX;
+      return {
+        paddingLeft: paddingX,
+        paddingRight: paddingX,
+      };
     },
   },
   methods: {
@@ -64,6 +82,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.navbar {
+  width: 100%;
+}
+
+.navbar-inner {
+  width: 100%;
+  max-width: none !important;
+  padding: 0;
+}
+
+.navbar-menu {
+  width: 100%;
+}
+
+.navbar-start > .navbar-item:first-child {
+  padding-left: 0;
+}
+
 @media (min-width: 1023px) {
   i.fa-fw {
     width: 0.8em;
