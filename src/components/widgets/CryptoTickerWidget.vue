@@ -7,18 +7,11 @@
         <div v-for="row in rows" :key="row.symbol" class="ticker-row">
           <span class="ticker-left">
             <span class="coin-icon-wrapper">
-              <img
-                v-if="iconUrlFor(row.symbol)"
-                class="coin-icon"
-                :src="iconUrlFor(row.symbol)"
+              <AppIcon
+                v-if="coinIcon(row.symbol)"
+                :icon="coinIcon(row.symbol)"
                 :alt="`${row.symbol} icon`"
-                loading="lazy"
-              />
-              <SimpleIcon
-                v-else-if="simpleIconFor(row.symbol)"
-                :slug="simpleIconFor(row.symbol)"
-                :name="row.symbol"
-                class="coin-simple-icon"
+                class="coin-icon"
               />
             </span>
             {{ row.symbol }}
@@ -34,11 +27,11 @@
 </template>
 
 <script>
-import SimpleIcon from "./SimpleIcon.vue";
+import AppIcon from "../AppIcon.vue";
 
 export default {
   name: "CryptoTickerWidget",
-  components: { SimpleIcon },
+  components: { AppIcon },
   props: {
     item: {
       type: Object,
@@ -65,11 +58,15 @@ export default {
     if (this.timer) clearInterval(this.timer);
   },
   methods: {
-    iconUrlFor(symbol) {
-      return this.item.iconUrls?.[symbol];
-    },
-    simpleIconFor(symbol) {
-      return this.item.simpleIcons?.[symbol];
+    coinIcon(symbol) {
+      // Priority: iconUrls > simpleIcons > icons (unified field)
+      const url = this.item.iconUrls?.[symbol];
+      if (url) return url;
+      const si = this.item.simpleIcons?.[symbol];
+      if (si) return `si-${si}`;
+      const icon = this.item.icons?.[symbol];
+      if (icon) return icon;
+      return "";
     },
     async fetchData() {
       try {
@@ -154,11 +151,6 @@ export default {
 .coin-icon {
   width: 1.1rem;
   height: 1.1rem;
-}
-.coin-simple-icon {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-right: 0;
 }
 .is-up {
   color: #18a058;

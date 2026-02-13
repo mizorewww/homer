@@ -34,17 +34,22 @@
 # ── links ────────────────────────────────────────────────────────────
 #   导航栏快捷链接数组，每项包含：
 #     name:   显示名称
-#     icon:   FontAwesome 图标类名（如 "fab fa-github"）
+#     icon:   图标（支持三种格式，见下方 ── 图标格式）
 #     url:    链接地址
 #     target: 打开方式（"_blank" / "_self"）
+#
+# ── 图标格式（所有地方通用）──────────────────────────────────────────
+#   1. FontAwesome:   "fas fa-globe" / "fab fa-github"
+#   2. SimpleIcons:   "si-github" / "si-vuedotjs"（slug 见 simpleicons.org）
+#   3. 图片 URL:      "https://example.com/icon.png" 或 "/local/path.svg"
 #
 # ── services ─────────────────────────────────────────────────────────
 #   服务卡片分组，每组包含：
 #     name:  分组名称
-#     icon:  FontAwesome 图标类名
+#     icon:  图标（支持三种格式）
 #     items: 服务项数组
 #       name:     服务名称
-#       icon:     FontAwesome 图标类名
+#       icon:     图标（支持三种格式）
 #       subtitle: 描述文字（会完整显示，支持换行）
 #       tag:      标签（鼠标悬停时显示）
 #       url:      链接地址
@@ -111,6 +116,10 @@ links:
     icon: "fab fa-github"
     url: "https://github.com"
     target: "_blank"
+  - name: "Binance"
+    icon: "si-binance"
+    url: "https://www.binance.com"
+    target: "_blank"
 
 services:
   - name: "开发"
@@ -163,7 +172,7 @@ widgetProviders:
     baseUrl: "https://www.okx.com"
     path: "/api/v5/market/ticker"
     quote: "USDT"
-    refreshMs: 8000
+    refreshMs: 1000
 
   ipSkk:
     ipUrl: "https://api.ip.sb/ip"
@@ -179,13 +188,14 @@ widgets:
         - type: "cryptoTicker"
           title: "OKX 实时行情"
           provider: "okx"
-          symbols: ["BTC", "ETH", "SOL"]
+          symbols: ["BTC", "ETH", "SOL","BNB"]
           iconUrls:
             BTC: "https://cdn.coinglasscdn.com/static/img/coins/bitcoin-BTC.png"
           simpleIcons:
             BTC: "bitcoin"
             ETH: "ethereum"
             SOL: "solana"
+            BNB: "bnbchain"
 
   right:
     - name: "Network"

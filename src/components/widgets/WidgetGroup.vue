@@ -1,13 +1,8 @@
 <template>
   <div class="widget-group">
     <h2 v-if="group.name" class="widget-group-title">
-      <i v-if="group.icon" :class="['fa-fw', group.icon]"></i>
-      <span v-else-if="group.simpleIcon" class="group-icon-wrapper">
-        <SimpleIcon
-          :slug="group.simpleIcon"
-          :name="group.name"
-          class="group-simple-icon"
-        />
+      <span v-if="groupIcon" class="group-icon-slot">
+        <AppIcon :icon="groupIcon" class="group-icon" />
       </span>
       {{ group.name }}
     </h2>
@@ -23,7 +18,7 @@
 </template>
 
 <script>
-import SimpleIcon from "./SimpleIcon.vue";
+import AppIcon from "../AppIcon.vue";
 import CryptoTickerWidget from "./CryptoTickerWidget.vue";
 import IpSkkWidget from "./IpSkkWidget.vue";
 
@@ -35,7 +30,7 @@ const WIDGET_COMPONENTS = {
 export default {
   name: "WidgetGroup",
   components: {
-    SimpleIcon,
+    AppIcon,
     CryptoTickerWidget,
     IpSkkWidget,
   },
@@ -47,6 +42,12 @@ export default {
     providers: {
       type: Object,
       default: () => ({}),
+    },
+  },
+  computed: {
+    groupIcon() {
+      // Backward compat: icon > simpleIcon > logo
+      return this.group.icon || (this.group.simpleIcon ? `si-${this.group.simpleIcon}` : "") || this.group.logo || "";
     },
   },
   methods: {
@@ -69,12 +70,20 @@ export default {
   font-size: 1.3rem;
 }
 
-.widget-group-title i {
+/* FontAwesome icons in the title */
+.widget-group-title :deep(i) {
   font-size: 1.3rem;
   color: var(--accent-color, var(--highlight-primary));
 }
 
-.group-icon-wrapper {
+/* SimpleIcons & image icons: white circle wrapper */
+.group-icon-slot :deep(.app-icon--si),
+.group-icon-slot :deep(.app-icon--img) {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.group-icon-slot {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -84,11 +93,5 @@ export default {
   background: #ffffff;
   flex-shrink: 0;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-
-.group-simple-icon {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-right: 0;
 }
 </style>

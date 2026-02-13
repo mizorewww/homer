@@ -30,7 +30,7 @@
               :href="link.url"
               :target="link.target"
             >
-              <i v-if="link.icon" :class="['fa-fw', link.icon]"></i>
+              <AppIcon v-if="link.icon" :icon="link.icon" class="navbar-link-icon" />
               {{ link.name }}
             </a>
           </div>
@@ -44,8 +44,11 @@
 </template>
 
 <script>
+import AppIcon from "./AppIcon.vue";
+
 export default {
   name: "Navbar",
+  components: { AppIcon },
   props: {
     open: {
       type: Boolean,

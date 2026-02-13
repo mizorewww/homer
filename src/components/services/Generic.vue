@@ -5,14 +5,9 @@
         <div class="card-content">
           <div :class="mediaClass">
             <slot name="icon">
-              <div v-if="item.logo" class="media-left">
+              <div v-if="itemIcon" class="media-left">
                 <figure class="image is-48x48">
-                  <img :src="item.logo" :alt="`${item.name} logo`" />
-                </figure>
-              </div>
-              <div v-if="item.icon" class="media-left">
-                <figure class="image is-48x48">
-                  <i style="font-size: 32px" :class="['fa-fw', item.icon]"></i>
+                  <AppIcon :icon="itemIcon" :alt="`${item.name} icon`" class="service-icon" />
                 </figure>
               </div>
             </slot>
@@ -54,14 +49,21 @@
 </template>
 
 <script>
+import AppIcon from "../AppIcon.vue";
+
 export default {
   name: "Generic",
+  components: { AppIcon },
   props: {
     item: Object,
   },
   computed: {
     mediaClass: function () {
       return { media: true, "no-subtitle": !this.item.subtitle };
+    },
+    itemIcon: function () {
+      // Backward compat: icon > logo > simpleIcon
+      return this.item.icon || this.item.logo || (this.item.simpleIcon ? `si-${this.item.simpleIcon}` : "");
     },
   },
 };
@@ -76,6 +78,16 @@ export default {
 
   img {
     max-height: 100%;
+    object-fit: contain;
+  }
+
+  // AppIcon: FA icons sized to 32px, images fill container
+  .service-icon :deep(i) {
+    font-size: 32px;
+  }
+  .service-icon :deep(.app-icon) {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
   }
 }
