@@ -133,29 +133,37 @@ export default {
 .widget-title {
   font-weight: 600;
   margin-bottom: 0.6rem;
+  color: var(--text-title);
 }
 .ip-content {
   margin: 0;
   white-space: pre-wrap;
   font-size: 0.85rem;
+  color: var(--text);
 }
 .network-list {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.35rem;
 }
 .network-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 0.8rem;
+  font-size: 0.9rem;
 }
 .label {
-  opacity: 0.8;
   white-space: nowrap;
+  color: var(--text-subtitle);
+}
+.label i {
+  color: var(--accent-color, var(--highlight-primary));
+  margin-right: 0.15rem;
 }
 .value {
   text-align: right;
   word-break: break-word;
+  color: var(--text);
 }
 .widget-error {
   color: #d03050;

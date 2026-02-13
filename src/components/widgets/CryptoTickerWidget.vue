@@ -6,18 +6,21 @@
       <div v-else>
         <div v-for="row in rows" :key="row.symbol" class="ticker-row">
           <span class="ticker-left">
-            <img
-              v-if="iconUrlFor(row.symbol)"
-              class="coin-icon"
-              :src="iconUrlFor(row.symbol)"
-              :alt="`${row.symbol} icon`"
-              loading="lazy"
-            />
-            <SimpleIcon
-              v-else-if="simpleIconFor(row.symbol)"
-              :slug="simpleIconFor(row.symbol)"
-              :name="row.symbol"
-            />
+            <span class="coin-icon-wrapper">
+              <img
+                v-if="iconUrlFor(row.symbol)"
+                class="coin-icon"
+                :src="iconUrlFor(row.symbol)"
+                :alt="`${row.symbol} icon`"
+                loading="lazy"
+              />
+              <SimpleIcon
+                v-else-if="simpleIconFor(row.symbol)"
+                :slug="simpleIconFor(row.symbol)"
+                :name="row.symbol"
+                class="coin-simple-icon"
+              />
+            </span>
             {{ row.symbol }}
           </span>
           <span class="ticker-right" :class="priceClass(row.change)">
@@ -118,6 +121,7 @@ export default {
 .widget-title {
   font-weight: 600;
   margin-bottom: 0.6rem;
+  color: var(--text-title);
 }
 .ticker-row {
   display: flex;
@@ -128,17 +132,33 @@ export default {
 .ticker-left {
   display: inline-flex;
   align-items: center;
+  color: var(--text);
 }
 .ticker-right {
   display: inline-flex;
   align-items: baseline;
   gap: 0.25rem;
 }
-.coin-icon {
-  width: 1rem;
-  height: 1rem;
+.coin-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #ffffff;
   margin-right: 0.45rem;
-  vertical-align: text-bottom;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.coin-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.coin-simple-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: 0;
 }
 .is-up {
   color: #18a058;

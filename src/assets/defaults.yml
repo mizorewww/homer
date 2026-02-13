@@ -18,6 +18,7 @@ defaults:
 
 theme: default
 colors: ~
+accentColor: ~
 
 message: ~
 links: []

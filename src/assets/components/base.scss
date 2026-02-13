@@ -9,6 +9,7 @@
 }
 
 @layer base {
+
   html,
   body,
   body #app-mount,
@@ -35,6 +36,7 @@
 
       a {
         color: var(--link);
+
         &:hover {
           color: var(--link-hover);
         }
@@ -44,6 +46,7 @@
         font-weight: 500;
         color: var(--text-title);
       }
+
       .subtitle {
         color: var(--text-subtitle);
       }
@@ -51,10 +54,12 @@
       .card {
         background-color: var(--card-background);
         box-shadow: 0 2px 15px 0 var(--card-shadow);
+
         &:hover {
           background-color: var(--card-background);
         }
       }
+
       .component-error .card {
         border: 1px solid rgba(255, 33, 33, 0.664);
         background-color: rgba(255, 58, 58, 0.24);
@@ -128,6 +133,7 @@
 
         .logo {
           float: left;
+
           i {
             vertical-align: top;
             padding: 8px 15px;
@@ -141,22 +147,26 @@
           }
         }
       }
+
       .navbar {
         background-color: var(--highlight-secondary);
 
         a {
           color: var(--text-header);
           padding: 8px 12px;
+
           &:hover,
           &:focus {
             color: var(--text-header);
             background-color: var(--highlight-hover);
           }
         }
+
         .navbar-menu {
           background-color: inherit;
         }
       }
+
       .navbar-end {
         text-align: right;
       }
@@ -168,6 +178,7 @@
       h2 {
         padding-bottom: 0px;
         @include ellipsis();
+
         i {
           color: var(--highlight-primary);
         }
@@ -178,13 +189,20 @@
         line-height: 1.3em;
         font-weight: 500;
         margin-bottom: 3px;
-        @include ellipsis();
+        white-space: normal;
+        word-break: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
       .subtitle {
         font-size: 0.9em;
         font-weight: 300;
-        @include ellipsis();
+        white-space: normal;
+        word-break: break-word;
       }
 
       .container {
@@ -263,7 +281,8 @@
       }
 
       .card-content {
-        height: 85px;
+        height: auto;
+        min-height: 85px;
         padding: 1.3rem;
       }
 
@@ -313,6 +332,7 @@
     .search-bar {
       position: relative;
       display: inline-block;
+
       input {
         border: none;
         background-color: var(--highlight-hover);

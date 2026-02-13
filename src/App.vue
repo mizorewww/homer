@@ -8,6 +8,7 @@
       isDark ? 'dark' : 'light',
       !config.footer ? 'no-footer' : '',
     ]"
+    :style="accentStyle"
   >
     <DynamicTheme v-if="config.colors" :themes="config.colors" />
     <div id="bighead">
@@ -78,10 +79,10 @@
         <GetStarted v-if="configurationNeeded" />
 
         <div v-if="!offline">
-          <div class="columns is-variable is-5 dashboard-layout">
+          <div class="dashboard-layout">
             <div
               v-if="hasLeftWidgets"
-              class="column is-3-desktop is-full-tablet side-widgets"
+              class="side-widgets side-left"
             >
               <WidgetGroup
                 v-for="(group, index) in leftWidgetGroups"
@@ -91,7 +92,7 @@
               />
             </div>
 
-            <div :class="['column', mainContentColumnClass]">
+            <div class="main-content">
               <!-- Optional messages -->
               <Message :item="config.message" />
 
@@ -117,7 +118,7 @@
 
             <div
               v-if="hasRightWidgets"
-              class="column is-3-desktop is-full-tablet side-widgets"
+              class="side-widgets side-right"
             >
               <WidgetGroup
                 v-for="(group, index) in rightWidgetGroups"
@@ -214,14 +215,14 @@ export default {
     hasRightWidgets: function () {
       return this.rightWidgetGroups.length > 0;
     },
-    mainContentColumnClass: function () {
-      if (this.hasLeftWidgets && this.hasRightWidgets) {
-        return "is-6-desktop";
-      }
-      if (this.hasLeftWidgets || this.hasRightWidgets) {
-        return "is-9-desktop";
-      }
-      return "is-full";
+    accentStyle: function () {
+      const c = this.config?.accentColor;
+      if (!c) return {};
+      return {
+        '--highlight-primary': c,
+        '--highlight-secondary': c,
+        '--accent-color': c,
+      };
     },
   },
   created: async function () {
@@ -391,8 +392,26 @@ export default {
   gap: 0.5rem;
 }
 
+/* ── Dashboard grid layout ── */
 .dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 240px) 1fr minmax(220px, 260px);
+  grid-template-areas: "left main right";
+  gap: 1.5rem;
   margin-top: 0.25rem;
+}
+
+.side-left {
+  grid-area: left;
+}
+
+.main-content {
+  grid-area: main;
+  min-width: 0;
+}
+
+.side-right {
+  grid-area: right;
 }
 
 .side-widgets {
@@ -403,5 +422,36 @@ export default {
 
 .side-widgets :deep(.widget-card .card-content) {
   height: auto;
+}
+
+/* ── Tablet: stack side widgets below ── */
+@media (max-width: 1023px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "main main"
+      "left right";
+    gap: 1rem;
+  }
+}
+
+/* ── Mobile: single column, main first ── */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "left"
+      "right";
+    gap: 1rem;
+  }
+
+  .top-search-form {
+    flex-direction: row;
+  }
+
+  .top-search-form .input {
+    min-width: 0;
+  }
 }
 </style>
